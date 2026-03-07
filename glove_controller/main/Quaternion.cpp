@@ -6,7 +6,6 @@
  */
 
 #include "Quaternion.h"
-#include <stdexcept>
 #include <cmath>
 
 
