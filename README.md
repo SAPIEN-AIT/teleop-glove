@@ -1,6 +1,6 @@
-# ✋ SapienHand — Glove Controller Firmware
+# Sapien Custom Data Glove — Controller Firmware
 
-> Part of the **Sapien Project** — a modular framework for biomimetic robotic hand control.
+> Part of the **Sapien Project** — a humanoid robot based on the Berkley Humanoid Lite.
 
 **Authors:** Karol Wickel · Edoardo Tadini
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-SapienHand is the embedded firmware and sensor fusion library for a wearable glove controller that captures full hand kinematics in real time. It combines **IMU-based orientation tracking** for the wrist and MCP joints with **flex resistor-based angle estimation** for the PIP and DIP joints, fusing all data into a unified hand pose representation.
+Embedded firmware and sensor fusion library for a wearable glove controller that captures full hand kinematics in real time. It combines **IMU-based orientation tracking** for the wrist and MCP joints with **flex resistor-based angle estimation** for the PIP and DIP joints, fusing all data into a unified hand pose representation.
 
 The system is designed to drive robotic hands, prosthetics, VR hand tracking, or any application requiring precise, low-latency hand pose data over wireless communication.
 
@@ -211,42 +211,3 @@ pip_angle = pose["fingers"][1]["pip_deg"]
 ```
 
 The ESP32-S3 uses **mDNS** to advertise itself as `sapienhand.local` on the local network, removing the need to hardcode an IP address.
-
----
-
-```
-SapienHand/
-├── main/
-│   ├── main.cpp              # Entry point, task scheduler
-│   ├── Quaternion.cpp/.h     # Quaternion math library
-│   ├── MadgwickFilter.cpp/.h # IMU sensor fusion
-│   ├── ICM20948.cpp/.h       # IMU driver (I²C)
-│   ├── TCA9548A.cpp/.h       # I²C multiplexer driver
-│   ├── FlexSensor.cpp/.h     # Flex strip ADC + calibration
-│   ├── HandPose.cpp/.h       # Full hand pose aggregator
-│   └── RestAPI.cpp/.h        # HTTP server + JSON serialization
-├── components/
-│   └── ...                   # ESP-IDF components
-├── test/
-│   └── quaternion_test.cpp   # Unit tests for math library
-└── README.md
-```
-
----
-
-## Part of the Sapien Project
-
-SapienHand is one module within the broader **Sapien Project**, which aims to build a complete biomimetic robotic hand system. Other modules include:
-
-- **SapienActuator** — tendon-driven finger actuation firmware
-- **SapienComms** — real-time pose streaming protocol
-- **SapienSim** — simulation and visualization layer
-
----
-
-## References
-
-- Madgwick, S. et al. — *Estimation of IMU and MARG orientation using a gradient descent algorithm*, IEEE ICORR 2011
-- Rahman, M.M. et al. — *Upper Limb Joint Angle Estimation Using Wearable IMUs*, Mathematics 2023
-- ICM-20948 Datasheet — TDK InvenSense
-- Hamilton, W.R. — *On quaternions*, Proceedings of the Royal Irish Academy, 1843

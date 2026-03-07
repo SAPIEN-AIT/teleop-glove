@@ -12,7 +12,6 @@ class Quaternion {
 private:
 	float _q1, _q2, _q3, _q4;
 public:
-	Quaternion();
 	Quaternion(float q1 = 0, float q2 = 0, float q3 = 0, float q4 = 0);
 	virtual ~Quaternion();
 	Quaternion(const Quaternion &other);
@@ -32,7 +31,11 @@ public:
 	float norm() const;
 	Quaternion normalized();
 	float joint_angle() const;
-	
+	float getQ1() const { return _q1; }
+	float getQ2() const { return _q2; }
+	float getQ3() const { return _q3; }
+	float getQ4() const { return _q4; }
+		
 	//Calculus
     Quaternion derivative_body(float wx, float wy, float wz);
     Quaternion derivative_world(float wx, float wy, float wz) ;
