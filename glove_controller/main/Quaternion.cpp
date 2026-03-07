@@ -9,9 +9,6 @@
 #include <stdexcept>
 #include <cmath>
 
-Quaternion::Quaternion(){
-	
-}
 
 Quaternion::Quaternion(float q1, float q2, float q3, float q4){
 	this->_q1 = q1;
@@ -115,8 +112,8 @@ Quaternion Quaternion::operator*(const  Quaternion& other) const{
 	return {
 		_q1*other._q1 - _q2*other._q2 - _q3*other._q3 - _q4*other._q4,
 		_q1*other._q2 + _q2*other._q1 + _q3*other._q4 - _q4*other._q3,
-		_q1*other._q3 - _q2*other._q4 + _q3*other._q1 - _q4*other._q2,
-		_q1*other._q4 + _q2*other._q3 - _q3*other._q2 - _q4*other._q1
+		_q1*other._q3 - _q2*other._q4 + _q3*other._q1 + _q4*other._q2,
+		_q1*other._q4 + _q2*other._q3 - _q3*other._q2 + _q4*other._q1
 	};
 }
 

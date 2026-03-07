@@ -30,7 +30,7 @@ private:
 	//calibration	
 	CalibrationState calState;
 	float accelBias[3];
-    float headingQuat[4];
+    Quaternion headingQuat;
 	float accelAccum[3];
     float magAccum[3];
     int sampleCount;
@@ -55,8 +55,8 @@ public:
 	void filter();
 	
 	//Accessors
-	int getFinger();
-	CalibrationState getState();
+	int getFinger() const;
+	CalibrationState getState() const;
 };
 
 #endif /* MAIN_JOINTANGLE_H_ */
