@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;glove_controller/main/MQTT.cpp&apos; to &apos;REST_API.cpp&apos;" description="Rename resource &apos;MQTT.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="main/MQTT.cpp" name="REST_API.cpp" stamp="1772882376942" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;glove_controller/main/MQTT.h&apos; to &apos;REST_API.h&apos;" description="Rename resource &apos;MQTT.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="main/MQTT.h" name="REST_API.h" stamp="1772882386117" updateReferences="true"/>
+</session>
