@@ -295,3 +295,12 @@ java.lang.RuntimeException
 
 !ENTRY com.espressif.idf.core 1 0 2026-03-07 10:28:46.034
 !MESSAGE toolchain path: C:\Espressif\tools\xtensa-esp-elf\esp-14.2.0_20251107\xtensa-esp-elf\bin\xtensa-esp32s3-elf-gcc.exe
+
+!ENTRY com.espressif.idf.core 1 0 2026-03-07 10:32:57.740
+!MESSAGE clangd: C:\Espressif\tools\esp-clang\esp-19.1.2_20250312\esp-clang\bin\clangd.exe
+
+!ENTRY com.espressif.idf.core 1 0 2026-03-07 10:32:57.748
+!MESSAGE toolchain path: C:\Espressif\tools\xtensa-esp-elf\esp-14.2.0_20251107\xtensa-esp-elf\bin\xtensa-esp32s3-elf-gcc.exe
+
+!ENTRY com.espressif.idf.core 1 0 2026-03-07 10:32:57.759
+!MESSAGE toolchain path: C:\Espressif\tools\xtensa-esp-elf\esp-14.2.0_20251107\xtensa-esp-elf\bin\xtensa-esp32s3-elf-gcc.exe

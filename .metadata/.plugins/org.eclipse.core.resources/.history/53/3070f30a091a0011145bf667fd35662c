@@ -16,6 +16,6 @@ JointAngle::~JointAngle() {
 	// TODO Auto-generated destructor stub
 }
 
-void JointAngle::filter(){
-	
+void JointAngle::filter(float& quaternions, const float& _gyro, const float& _acc, const float& _mag){
+	float tmp_quaternions[4];
 }

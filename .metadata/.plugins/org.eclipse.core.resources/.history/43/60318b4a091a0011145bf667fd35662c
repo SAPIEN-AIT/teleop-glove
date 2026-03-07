@@ -1,0 +1,38 @@
+/*
+ * Quaternion.cpp
+ *
+ *  Created on: 7 mar 2026
+ *      Author: karol
+ */
+
+#include "Quaternion.h"
+
+Quaternion::Quaternion() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Quaternion::~Quaternion() {
+	// TODO Auto-generated destructor stub
+}
+
+Quaternion::Quaternion(const Quaternion &other) {
+	// TODO Auto-generated constructor stub
+
+}
+
+Quaternion::Quaternion(Quaternion &&other) {
+	// TODO Auto-generated constructor stub
+
+}
+
+Quaternion& Quaternion::operator=(const Quaternion &other) {
+	// TODO Auto-generated method stub
+
+}
+
+Quaternion& Quaternion::operator=(Quaternion &&other) {
+	// TODO Auto-generated method stub
+
+}
+
