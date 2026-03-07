@@ -2,11 +2,13 @@
  * Quaternion.cpp
  *
  *  Created on: 7 mar 2026
- *      Author: karol
+ *      Author: Karol Wickel
  */
 
 #include "Quaternion.h"
 #include <cmath>
+#include "esp_log.h"
+static const char* TAG = "Quaternion";
 
 
 Quaternion::Quaternion(float q1, float q2, float q3, float q4){
@@ -127,7 +129,8 @@ Quaternion Quaternion::conjugate() const{
 Quaternion Quaternion::inverse() const{
 	float n2 = _q1*_q1 + _q2*_q2 + _q3*_q3 + _q4*_q4;
 	if(n2<1e-15){
-		throw std::runtime_error("cannot invert a zero quaternion");
+		ESP_LOGE(TAG, "cannot invert a zero quaternion, returning identity");
+        return Quaternion(1, 0, 0, 0);
 	}
 	return conjugate() * (float)(1.0/n2);
 }
@@ -140,7 +143,8 @@ float Quaternion::norm() const {
 Quaternion Quaternion::normalized(){
 	float n = norm();
 	if(n<1e-15){
-		throw std::runtime_error("cannot normalize a zero quaternion");
+		ESP_LOGE(TAG, "cannot normalize a zero quaternion, returning identity");
+        return Quaternion(1, 0, 0, 0);
 	}
 	
 	return *this * (float)(1.0/n);

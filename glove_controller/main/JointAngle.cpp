@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "JointAngle.h"
+#include <cmath>
 
 JointAngle::JointAngle() {
     calState = CalibrationState::Idle;
