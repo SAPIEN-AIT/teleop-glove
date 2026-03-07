@@ -19,18 +19,11 @@ public:
 	Quaternion(Quaternion &&other);
 	Quaternion& operator=(const Quaternion &other);
 	Quaternion& operator=(Quaternion &&other);
-	Quaternion  operator+(const Quaternion& other) const;
-    Quaternion  operator-(const Quaternion& other) const;
-    Quaternion  operator-() const;
-    Quaternion& operator+=(const Quaternion& other);
-    Quaternion& operator-=(const Quaternion& other);
-	Quaternion operator*(float other);
+	Quaternion operator*(float &other);
 	Quaternion operator*(Quaternion& other);
 	Quaternion inverse();
 	Quaternion rotate_by(Quaternion other);
 	Quaternion conjugate() const;
-	float norm() const;
-	Quaternion normalized();
 };
 
 #endif /* MAIN_QUATERNION_H_ */

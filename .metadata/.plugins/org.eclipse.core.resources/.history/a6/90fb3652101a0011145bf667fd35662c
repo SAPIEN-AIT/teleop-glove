@@ -1,0 +1,75 @@
+/*
+ * Quaternion.cpp
+ *
+ *  Created on: 7 mar 2026
+ *      Author: karol
+ */
+
+#include "Quaternion.h"
+#include <stdexcept>
+
+Quaternion::Quaternion() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Quaternion::Quaternion(float q1 = 0, float q2 = 0, float q3 = 0, float q4 = 0){
+	this->_q1 = q1;
+	this->_q2 = q2;
+	this->_q3 = q3;
+	this->_q4 = q4;
+}
+
+Quaternion::~Quaternion() {
+	// TODO Auto-generated destructor stub
+}
+
+Quaternion::Quaternion(const Quaternion &other) {
+	// TODO Auto-generated constructor stub
+
+}
+
+Quaternion::Quaternion(Quaternion &&other) {
+	// TODO Auto-generated constructor stub
+
+}
+
+Quaternion& Quaternion::operator=(const Quaternion &other) {
+	// TODO Auto-generated method stub
+
+}
+
+Quaternion& Quaternion::operator=(Quaternion &&other) {
+	// TODO Auto-generated method stub
+	
+}
+
+Quaternion Quaternion::operator*(float &other){
+	auto placeholder = Quaternion(this->_q1 * other, this->_q2 * other,
+								  this->_q3 * other, this->_q4 * other);
+	return placeholder;
+}
+
+Quaternion& Quaternion::operator*(Quaternion& other){
+	
+}
+
+Quaternion Quaternion::rotate_by(Quaternion other){
+	
+}
+
+Quaternion Quaternion::conjugate() const{
+	return {_q1, -_q2, -_q3, -_q4};	
+}
+
+Quaternion Quaternion::inverse(){
+	float n2 = _q1*_q1 + _q2*_q2 + _q3*_q3 + _q4*_q4;
+	if(n2<1e-15){
+		std::runtime_error("cannot invert a zero quaternion");
+	}
+	return conjugate() * (1.0/n2);
+}
+
+
+
+

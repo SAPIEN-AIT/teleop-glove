@@ -7,7 +7,6 @@
 
 #include "Quaternion.h"
 #include <stdexcept>
-#include <cmath>
 
 Quaternion::Quaternion() {
 	// TODO Auto-generated constructor stub
@@ -67,45 +66,6 @@ Quaternion& Quaternion::operator=(Quaternion &&other) {
     return *this;
 }
 
-Quaternion Quaternion::operator+(const Quaternion& other) const {
-    return Quaternion(
-        _q1 + other._q1,
-        _q2 + other._q2,
-        _q3 + other._q3,
-        _q4 + other._q4
-    );
-}
-
-Quaternion Quaternion::operator-(const Quaternion& other) const {
-    return Quaternion(
-        _q1 - other._q1,
-        _q2 - other._q2,
-        _q3 - other._q3,
-        _q4 - other._q4
-    );
-}
-
-Quaternion& Quaternion::operator+=(const Quaternion& other) {
-    _q1 += other._q1;
-    _q2 += other._q2;
-    _q3 += other._q3;
-    _q4 += other._q4;
-    return *this;
-}
-
-Quaternion& Quaternion::operator-=(const Quaternion& other) {
-    _q1 -= other._q1;
-    _q2 -= other._q2;
-    _q3 -= other._q3;
-    _q4 -= other._q4;
-    return *this;
-}
-
-// Unary minus — negate all components
-Quaternion Quaternion::operator-() const {
-    return Quaternion(-_q1, -_q2, -_q3, -_q4);
-}
-
 Quaternion Quaternion::operator*(float other){
 	auto placeholder = Quaternion(this->_q1 * other, this->_q2 * other,
 								  this->_q3 * other, this->_q4 * other);
@@ -132,24 +92,11 @@ Quaternion Quaternion::conjugate() const{
 Quaternion Quaternion::inverse(){
 	float n2 = _q1*_q1 + _q2*_q2 + _q3*_q3 + _q4*_q4;
 	if(n2<1e-15){
-		throw std::runtime_error("cannot invert a zero quaternion");
+		std::runtime_error("cannot invert a zero quaternion");
 	}
 	return conjugate() * (float)(1.0/n2);
 }
 
-float Quaternion::norm() const {
-    return std::sqrt(_q1*_q1 + _q2*_q2 + _q3*_q3 + _q4*_q4);
-}
-
-
-Quaternion Quaternion::normalized(){
-	float n = norm();
-	if(n<1e-15){
-		throw std::runtime_error("cannot normalize a zero quaternion");
-	}
-	
-	return *this * (float)(1.0/n);
-}
 
 
 

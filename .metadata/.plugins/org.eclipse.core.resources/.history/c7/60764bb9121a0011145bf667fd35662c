@@ -30,7 +30,6 @@ public:
 	Quaternion rotate_by(Quaternion other);
 	Quaternion conjugate() const;
 	float norm() const;
-	Quaternion normalized();
 };
 
 #endif /* MAIN_QUATERNION_H_ */
