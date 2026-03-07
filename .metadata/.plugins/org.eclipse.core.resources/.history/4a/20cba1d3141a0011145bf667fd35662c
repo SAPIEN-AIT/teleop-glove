@@ -9,11 +9,12 @@
 #include <stdexcept>
 #include <cmath>
 
-Quaternion::Quaternion(){
-	
+Quaternion::Quaternion() {
+	// TODO Auto-generated constructor stub
+
 }
 
-Quaternion::Quaternion(float q1, float q2, float q3, float q4){
+Quaternion::Quaternion(float q1 = 0, float q2 = 0, float q3 = 0, float q4 = 0){
 	this->_q1 = q1;
 	this->_q2 = q2;
 	this->_q3 = q3;
@@ -111,7 +112,7 @@ Quaternion Quaternion::operator*(float other){
 	return placeholder;
 }
 
-Quaternion Quaternion::operator*(const  Quaternion& other) const{
+Quaternion Quaternion::operator*(Quaternion& other) const{
 	return {
 		_q1*other._q1 - _q2*other._q2 - _q3*other._q3 - _q4*other._q4,
 		_q1*other._q2 + _q2*other._q1 + _q3*other._q4 - _q4*other._q3,
@@ -174,8 +175,3 @@ Quaternion Quaternion::integrate(float wx, float wy, float wz, float dt){
     return next.normalized();
 }
 
-float Quaternion::joint_angle() const {
-    float y = 2.0f * (_q1*_q4 + _q2*_q3);
-    float x = 1.0f - (_q3*_q3 + _q4*_q4);
-    return std::atan2(y, x) * 57.29578f;
-}

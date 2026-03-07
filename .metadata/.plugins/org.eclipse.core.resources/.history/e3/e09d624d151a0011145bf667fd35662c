@@ -31,8 +31,7 @@ public:
 	Quaternion conjugate() const;
 	float norm() const;
 	Quaternion normalized();
-	float joint_angle() const;
-	
+
 	//Calculus
     Quaternion derivative_body(float wx, float wy, float wz);
     Quaternion derivative_world(float wx, float wy, float wz) ;

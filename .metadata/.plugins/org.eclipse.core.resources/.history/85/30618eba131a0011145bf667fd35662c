@@ -13,7 +13,7 @@ private:
 	float _q1, _q2, _q3, _q4;
 public:
 	Quaternion();
-	Quaternion(float q1 = 0, float q2 = 0, float q3 = 0, float q4 = 0);
+	Quaternion(float q1, float q2, float q3, float q4);
 	virtual ~Quaternion();
 	Quaternion(const Quaternion &other);
 	Quaternion(Quaternion &&other);
@@ -25,18 +25,12 @@ public:
     Quaternion& operator+=(const Quaternion& other);
     Quaternion& operator-=(const Quaternion& other);
 	Quaternion operator*(float other);
-	Quaternion operator*(const Quaternion& other) const;
-	Quaternion inverse()const;
+	Quaternion operator*(Quaternion& other);
+	Quaternion inverse();
 	Quaternion rotate_by(Quaternion other);
 	Quaternion conjugate() const;
 	float norm() const;
 	Quaternion normalized();
-	float joint_angle() const;
-	
-	//Calculus
-    Quaternion derivative_body(float wx, float wy, float wz);
-    Quaternion derivative_world(float wx, float wy, float wz) ;
-    Quaternion integrate(float wx, float wy, float wz, float dt);
 };
 
 #endif /* MAIN_QUATERNION_H_ */

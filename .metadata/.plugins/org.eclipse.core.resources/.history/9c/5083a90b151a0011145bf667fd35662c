@@ -9,9 +9,7 @@
 #include <stdexcept>
 #include <cmath>
 
-Quaternion::Quaternion(){
-	
-}
+
 
 Quaternion::Quaternion(float q1, float q2, float q3, float q4){
 	this->_q1 = q1;
@@ -174,8 +172,3 @@ Quaternion Quaternion::integrate(float wx, float wy, float wz, float dt){
     return next.normalized();
 }
 
-float Quaternion::joint_angle() const {
-    float y = 2.0f * (_q1*_q4 + _q2*_q3);
-    float x = 1.0f - (_q3*_q3 + _q4*_q4);
-    return std::atan2(y, x) * 57.29578f;
-}
