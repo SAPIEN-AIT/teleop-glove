@@ -1,6 +1,6 @@
 # Sapien Custom Data Glove — Controller Firmware
 
-> Part of the **Sapien Project** — a modular framework for biomimetic robotic hand control.
+> Part of the **Sapien Project** — a humanoid robot based on the Berkley Humanoid Lite.
 
 **Authors:** Karol Wickel · Edoardo Tadini
 
