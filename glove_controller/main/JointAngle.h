@@ -57,7 +57,7 @@ public:
     void addCalibrationSample(const float accel[3], const float mag[3]);
 	CorrectedData processSample(const float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
 	
-	void mad_filter(CorrectedData data, float alpha);
+	void mad_filter(CorrectedData data, float alpha, float gamma);
 
 	//Accessors
 	int getFinger() const;

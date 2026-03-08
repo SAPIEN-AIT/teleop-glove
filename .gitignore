@@ -1,2 +1,6 @@
 glove_controller/main/test.cpp
 /.metadata/
+/glove_controller/build
+/glove_controller/.vscode
+/glove_controller/.settings
+/glove_controller/managed_components

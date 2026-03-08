@@ -194,3 +194,15 @@ Quaternion Quaternion::jacobianGradient(float eps) const {
         dfdq4._q1*this->_q1 + dfdq4._q2*_q2 + dfdq4._q3*_q3 + dfdq4._q4*_q4
     );
 }   
+
+float& Quaternion::operator[](int i) {
+    switch(i) {
+        case 0: return _q1;
+        case 1: return _q2;
+        case 2: return _q3;
+        case 3: return _q4;
+        default:
+            ESP_LOGE(TAG, "Quaternion index out of bounds");
+            return _q1;
+    }
+}

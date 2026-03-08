@@ -25,6 +25,7 @@ public:
     Quaternion& operator-=(const Quaternion& other);
 	Quaternion operator*(float other);
 	Quaternion operator*(const Quaternion& other) const;
+	float& operator[](int i);
 	Quaternion inverse()const;
 	Quaternion rotate_by(Quaternion other);
 	Quaternion conjugate() const;
