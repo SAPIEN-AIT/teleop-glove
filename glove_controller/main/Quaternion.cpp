@@ -179,3 +179,18 @@ float Quaternion::joint_angle() const {
     float x = 1.0f - (_q3*_q3 + _q4*_q4);
     return std::atan2(y, x) * 57.29578f;
 }
+
+
+Quaternion Quaternion::jacobianGradient(float eps) const {
+    Quaternion dfdq1 = ((Quaternion(this->_q1+eps, this->_q2, this->_q3, this->_q4).normalized()) - *this) * (1.f/eps);
+    Quaternion dfdq2 = ((Quaternion(this->_q1, this->_q2+eps, this->_q3, this->_q4).normalized()) - *this) * (1.f/eps);
+    Quaternion dfdq3 = ((Quaternion(this->_q1, this->_q2, this->_q3+eps, this->_q4).normalized()) - *this) * (1.f/eps);
+    Quaternion dfdq4 = ((Quaternion(this->_q1, this->_q2, this->_q3, this->_q4+eps).normalized()) - *this) * (1.f/eps);
+
+    return Quaternion(
+        dfdq1._q1*this->_q1 + dfdq1._q2*_q2 + dfdq1._q3*_q3 + dfdq1._q4*_q4,
+        dfdq2._q1*this->_q1 + dfdq2._q2*_q2 + dfdq2._q3*_q3 + dfdq2._q4*_q4,
+        dfdq3._q1*this->_q1 + dfdq3._q2*_q2 + dfdq3._q3*_q3 + dfdq3._q4*_q4,
+        dfdq4._q1*this->_q1 + dfdq4._q2*_q2 + dfdq4._q3*_q3 + dfdq4._q4*_q4
+    );
+}   
