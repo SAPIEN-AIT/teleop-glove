@@ -50,7 +50,7 @@ public:
 	//calibration
 	void beginCalibration(int numSamples);
     void addCalibrationSample(const float accel[3], const float mag[3]);
-	CorrectedData processSample(const float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
+	CorrectedData calibrateSample(const float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
 
 	void filter();
 	
