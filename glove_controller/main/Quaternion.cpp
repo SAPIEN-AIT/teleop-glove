@@ -2,11 +2,13 @@
  * Quaternion.cpp
  *
  *  Created on: 7 mar 2026
- *      Author: karol
+ *      Author: Karol Wickel
  */
 
 #include "Quaternion.h"
 #include <cmath>
+#include "esp_log.h"
+static const char* TAG = "Quaternion";
 
 
 Quaternion::Quaternion(float q1, float q2, float q3, float q4){
@@ -127,7 +129,8 @@ Quaternion Quaternion::conjugate() const{
 Quaternion Quaternion::inverse() const{
 	float n2 = _q1*_q1 + _q2*_q2 + _q3*_q3 + _q4*_q4;
 	if(n2<1e-15){
-		throw std::runtime_error("cannot invert a zero quaternion");
+		ESP_LOGE(TAG, "cannot invert a zero quaternion, returning identity");
+        return Quaternion(1, 0, 0, 0);
 	}
 	return conjugate() * (float)(1.0/n2);
 }
@@ -140,7 +143,8 @@ float Quaternion::norm() const {
 Quaternion Quaternion::normalized(){
 	float n = norm();
 	if(n<1e-15){
-		throw std::runtime_error("cannot normalize a zero quaternion");
+		ESP_LOGE(TAG, "cannot normalize a zero quaternion, returning identity");
+        return Quaternion(1, 0, 0, 0);
 	}
 	
 	return *this * (float)(1.0/n);
@@ -174,4 +178,31 @@ float Quaternion::joint_angle() const {
     float y = 2.0f * (_q1*_q4 + _q2*_q3);
     float x = 1.0f - (_q3*_q3 + _q4*_q4);
     return std::atan2(y, x) * 57.29578f;
+}
+
+
+Quaternion Quaternion::jacobianGradient(float eps) const {
+    Quaternion dfdq1 = ((Quaternion(this->_q1+eps, this->_q2, this->_q3, this->_q4).normalized()) - *this) * (1.f/eps);
+    Quaternion dfdq2 = ((Quaternion(this->_q1, this->_q2+eps, this->_q3, this->_q4).normalized()) - *this) * (1.f/eps);
+    Quaternion dfdq3 = ((Quaternion(this->_q1, this->_q2, this->_q3+eps, this->_q4).normalized()) - *this) * (1.f/eps);
+    Quaternion dfdq4 = ((Quaternion(this->_q1, this->_q2, this->_q3, this->_q4+eps).normalized()) - *this) * (1.f/eps);
+
+    return Quaternion(
+        dfdq1._q1*this->_q1 + dfdq1._q2*_q2 + dfdq1._q3*_q3 + dfdq1._q4*_q4,
+        dfdq2._q1*this->_q1 + dfdq2._q2*_q2 + dfdq2._q3*_q3 + dfdq2._q4*_q4,
+        dfdq3._q1*this->_q1 + dfdq3._q2*_q2 + dfdq3._q3*_q3 + dfdq3._q4*_q4,
+        dfdq4._q1*this->_q1 + dfdq4._q2*_q2 + dfdq4._q3*_q3 + dfdq4._q4*_q4
+    );
+}   
+
+float& Quaternion::operator[](int i) {
+    switch(i) {
+        case 0: return _q1;
+        case 1: return _q2;
+        case 2: return _q3;
+        case 3: return _q4;
+        default:
+            ESP_LOGE(TAG, "Quaternion index out of bounds");
+            return _q1;
+    }
 }

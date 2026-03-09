@@ -5,7 +5,6 @@ idf_component_register(
     SRCS
         "main.c"
         "FlexSensor.cpp"
-        "HardwareAbstraction.cpp"
         "ICM20948.cpp"
         "JointAngle.cpp"
         "Quaternion.cpp"

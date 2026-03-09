@@ -9,6 +9,7 @@
 #define MAIN_JOINTANGLE_H_
 
 #include "Quaternion.h"
+#include <cstdint>
 
 enum class CalibrationState {
     Idle,
@@ -35,6 +36,10 @@ private:
     float magAccum[3];
     int sampleCount;
     int targetSamples;
+	float beta;
+	Quaternion _q_est;
+	int64_t _last_us;
+
 
 //Methods
 	//calibration
@@ -50,13 +55,14 @@ public:
 	//calibration
 	void beginCalibration(int numSamples);
     void addCalibrationSample(const float accel[3], const float mag[3]);
-	CorrectedData calibrateSample(const float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
-
-	void filter();
+	CorrectedData procesSampleonst float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
 	
+	void mad_filter(CorrectedData data, float alpha, float gamma);
+
 	//Accessors
 	int getFinger() const;
 	CalibrationState getState() const;
+	float get_beta() const {return beta;};
 };
 
 #endif /* MAIN_JOINTANGLE_H_ */

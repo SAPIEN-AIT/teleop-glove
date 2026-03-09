@@ -31,7 +31,6 @@ private:
     i2c_master_dev_handle_t _dev;
     uint8_t                 _i2c_addr;      // 0x68 or 0x69
 
-    i2c_master_dev_handle_t _mux_dev;
     uint8_t                 _mux_channel;   
 
     icm20948_bank_t         _current_bank;
@@ -58,7 +57,7 @@ public:
 
     esp_err_t read_accel(float* ax, float* ay, float* az);
     esp_err_t read_gyro (float* gx, float* gy, float* gz);
-    esp_err_t read_temp (float* temp_c);
+    esp_err_t read_temp (float* temp_c);     
 };
 
 #endif /* MAIN_ICM20948_H_ */
