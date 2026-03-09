@@ -133,7 +133,7 @@ void JointAngle::calibrateMag(const float rawMag[3], const float accel[3], float
     corrected[2] = qmCorrected.getQ4();
 }
 
-CorrectedData JointAngle::calibrateSample(const float rawAccel[3], const float rawMag[3], const float rawGyro[3]) {
+CorrectedData JointAngle::processSample(const float rawAccel[3], const float rawMag[3], const float rawGyro[3]) {
     CorrectedData out;
 
     calibrateAccel(rawAccel, out.accel);

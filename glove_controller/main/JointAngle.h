@@ -55,7 +55,7 @@ public:
 	//calibration
 	void beginCalibration(int numSamples);
     void addCalibrationSample(const float accel[3], const float mag[3]);
-	CorrectedData procesSampleonst float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
+	CorrectedData procesSample float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
 	
 	void mad_filter(CorrectedData data, float alpha, float gamma);
 
