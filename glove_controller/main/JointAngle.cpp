@@ -5,10 +5,8 @@
  *      Author: karol
  */
 
-#include <iostream>
 #include "JointAngle.h"
-#include <cmath>
-#include "esp_timer.h"
+
 
 JointAngle::JointAngle() {
     calState = CalibrationState::Idle;
@@ -22,6 +20,9 @@ JointAngle::JointAngle() {
     }
 
     headingQuat = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+    _q_est = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+    _last_us = esp_timer_get_time();
+    beta = 0.041f;
 }
 
 //Calibration
@@ -163,7 +164,7 @@ JointAngle::~JointAngle() {
 //   high (~0.1)  — trust accel/mag more, faster correction but noisier
 // =============================================================================
 
-void JointAngle::mad_filter(CorrectedData data, float alpha) {
+void JointAngle::mad_filter(const CorrectedData& data, float alpha, float gamma) {
     
     // ── dt ────────────────────────────────────────────────────────────────────
     int64_t now_us = esp_timer_get_time();
@@ -202,11 +203,12 @@ void JointAngle::mad_filter(CorrectedData data, float alpha) {
     // STEP 3 — Magnetometer
     // =========================================================================
 
-    float bx, bz;
-    Quaternion b_mag(0, bx, 0, bz);
-
     Quaternion mag_measure(0, data.mag[0], data.mag[1], data.mag[2]);
     mag_measure = mag_measure.normalized();
+
+    Quaternion h = _q_est * mag_measure * _q_est.conjugate();  // earth-frame field
+    float bx = std::sqrt(h.getQ2()*h.getQ2() + h.getQ3()*h.getQ3());
+    float bz = h.getQ4();
 
     float f_mag[3] = {
         2.f*bx*(0.5f - _q_est.getQ3()*_q_est.getQ3() - _q_est.getQ4()*_q_est.getQ4()) + 2.f*bz*(_q_est.getQ2()*_q_est.getQ4() - _q_est.getQ1()*_q_est.getQ3()) - mag_measure.getQ2(),
@@ -222,7 +224,6 @@ void JointAngle::mad_filter(CorrectedData data, float alpha) {
     };
 
     Quaternion gradf;
-    float sum = 0;
     for (int i = 0; i < 4; i++) {
         gradf[i] = 0.f;
         for (int j = 0; j < 3; j++) {
@@ -230,6 +231,9 @@ void JointAngle::mad_filter(CorrectedData data, float alpha) {
                            + jacobian_mag[j][i]   * f_mag[j];   // J_b^T * f_b
         }
     }
+    // normalize gradient direction, then fuse with gyro prediction
+    Quaternion gradf_norm = gradf.normalized();
+    _q_est = (orient_gyro - gradf_norm * (beta * dt)).normalized();
 }
 
 //Accessors

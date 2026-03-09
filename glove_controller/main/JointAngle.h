@@ -9,7 +9,10 @@
 #define MAIN_JOINTANGLE_H_
 
 #include "Quaternion.h"
+#include "esp_timer.h"
 #include <cstdint>
+#include <cmath>
+#include <iostream>
 
 enum class CalibrationState {
     Idle,
@@ -55,9 +58,9 @@ public:
 	//calibration
 	void beginCalibration(int numSamples);
     void addCalibrationSample(const float accel[3], const float mag[3]);
-	CorrectedData procesSample float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
+	CorrectedData procesSample(float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
 	
-	void mad_filter(CorrectedData data, float alpha, float gamma);
+	void mad_filter(const CorrectedData& data, float alpha, float gamma);
 
 	//Accessors
 	int getFinger() const;
