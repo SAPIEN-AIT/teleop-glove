@@ -60,7 +60,11 @@ public:
     void addCalibrationSample(const float accel[3], const float mag[3]);
 	CorrectedData procesSample(float rawAccel[3], const float rawMag[3], const float rawGyro[3]);
 	
-	void mad_filter(const CorrectedData& data, float alpha, float gamma);
+	Quaternion mad_filter(const CorrectedData& data, float alpha, float gamma);
+
+	static float computeJointAngle(const Quaternion& q_proximal, const Quaternion& q_distal, const Quaternion& q_ref,
+		int axis = 2 // axis: 0 = X (roll), 1 = Y (pitch), 2 = Z (yaw)
+	);
 
 	//Accessors
 	int getFinger() const;

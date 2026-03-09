@@ -164,7 +164,7 @@ JointAngle::~JointAngle() {
 //   high (~0.1)  — trust accel/mag more, faster correction but noisier
 // =============================================================================
 
-void JointAngle::mad_filter(const CorrectedData& data, float alpha, float gamma) {
+Quaternion JointAngle::mad_filter(const CorrectedData& data, float alpha, float gamma) {
     
     // ── dt ────────────────────────────────────────────────────────────────────
     int64_t now_us = esp_timer_get_time();
@@ -234,6 +234,46 @@ void JointAngle::mad_filter(const CorrectedData& data, float alpha, float gamma)
     // normalize gradient direction, then fuse with gyro prediction
     Quaternion gradf_norm = gradf.normalized();
     _q_est = (orient_gyro - gradf_norm * (beta * dt)).normalized();
+
+    return _q_est;
+}
+
+
+//Example usage of computeJointAngle:
+//Quaternion q_ref = sensorA.mad_filter(dataA) * sensorB.mad_filter(dataB).conjugate();
+//Quaternion qA = sensorA.mad_filter(dataA);
+//Quaternion qB = sensorB.mad_filter(dataB);
+//float flex_deg = JointAngle::computeJointAngle(qA, qB, q_ref, 2);
+
+float JointAngle::computeJointAngle(
+    const Quaternion& q_proximal,
+    const Quaternion& q_distal,
+    const Quaternion& q_ref,
+    int axis)
+{
+    Quaternion q_rel = q_proximal * q_distal.conjugate();
+    Quaternion q = q_rel * q_ref.conjugate();
+    float q0 = q.getQ1(), q1 = q.getQ2(), q2 = q.getQ3(), q3 = q.getQ4();
+    float angle_rad;
+
+    switch (axis) {
+        case 0: // roll; rotation about X
+            angle_rad = std::atan2(2.f*(q0*q1 + q2*q3),
+                                   1.f - 2.f*(q1*q1 + q2*q2));
+            break;
+        case 1: // pitch; rotation about Y
+            angle_rad = std::asin(
+                std::fmax(-1.f, std::fmin(1.f,
+                    2.f*(q0*q2 - q3*q1))));
+            break;
+        case 2: // yaw; rotation about Z  (default)
+        default:
+            angle_rad = std::atan2(2.f*(q0*q3 + q1*q2),
+                                   1.f - 2.f*(q2*q2 + q3*q3));
+            break;
+    }
+
+    return angle_rad * 57.29578f; // rad to deg
 }
 
 //Accessors
