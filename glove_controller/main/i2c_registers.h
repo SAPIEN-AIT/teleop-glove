@@ -27,7 +27,7 @@ const static int GYRO_YOUT_L = 0x36;
 const static int GYRO_ZOUT_H = 0x37;
 const static int GYRO_ZOUT_L = 0x38;
 
-const static int SELECT_BANK = 0x7f;
+const static uint8_t SELECT_BANK = 0x7f;
 
 //USER BANK 2
 const static int ACCEL_CONFIG = 0x14;

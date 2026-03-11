@@ -16,6 +16,9 @@
 #include <cstdint>
 #include "i2c_registers.h"
 
+static const i2c_port_num_t I2C_PORT = 0;
+static const gpio_num_t SCL_PIN = static_cast<gpio_num_t>(7);
+static const gpio_num_t SDA_PIN = static_cast<gpio_num_t>(8);
 
 typedef enum {
     ICM_BANK_0 = 0,
@@ -27,6 +30,21 @@ typedef enum {
 
 class ICM20948 {
 private:
+    i2c_master_bus_config_t i2c_mst_config = {
+        .i2c_port = I2C_PORT,
+        .sda_io_num = SDA_PIN,
+        .scl_io_num = SCL_PIN,
+        .clk_source = I2C_CLK_SRC_DEFAULT,
+        .glitch_ignore_cnt = 7,
+        .flags.enable_internal_pullup = false,
+    };
+
+    i2c_device_config_t dev_cfg = {
+    .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+    .device_address = 0x68,
+    .scl_speed_hz = 100000,
+    };
+
     i2c_master_bus_handle_t _bus;
     i2c_master_dev_handle_t _dev;
     uint8_t                 _i2c_addr;      // 0x68 or 0x69
