@@ -27,6 +27,26 @@ typedef enum {
     ICM_BANK_3 = 3,
 } icm20948_bank_t;
 
+typedef enum {
+    ACCEL_RANGE_2G = 0,
+    ACCEL_RANGE_4G,
+    ACCEL_RANGE_8G,
+    ACCEL_RANGE_16G
+} accel_range_t;
+
+typedef enum {
+    GYRO_RANGE_250DPS = 0,
+    GYRO_RANGE_500DPS,
+    GYRO_RANGE_1000DPS,
+    GYRO_RANGE_2000DPS
+} gyro_range_t;
+
+struct icm20948_data_t {
+    float ax, ay, az;
+    float gx, gy, gz;
+    float temp_c;
+};
+
 
 class ICM20948 {
 private:
@@ -55,27 +75,46 @@ private:
 
     static const char*      TAG;
 
-    esp_err_t _mux_select();
-    esp_err_t _mux_deselect();
+    float _accel_res = 16384.0f;
+    float _gyro_res  = 131.0f;
+
+    float _gyro_bias[3]  = {0};
+    float _accel_bias[3] = {0};
+
+    uint32_t _timeout = 100;
+
     esp_err_t _set_bank(icm20948_bank_t bank);
 
 public:
-    ICM20948(i2c_master_bus_handle_t bus_handle,
-             i2c_master_dev_handle_t mux_dev,
+    ICM20948(i2c_master_dev_handle_t mux_dev,
              uint8_t                 mux_channel,
              uint8_t                 i2c_addr = 0x68);
 
     ~ICM20948();
 
-    esp_err_t begin();       // wake, verify WHO_AM_I, configure
+    esp_err_t verify();       // wake, verify WHO_AM_I, configure
 
     esp_err_t write_register(icm20948_bank_t bank, uint8_t reg, uint8_t value);
     esp_err_t read_register (icm20948_bank_t bank, uint8_t reg,
                               uint8_t* buf, size_t len = 1);
 
-    esp_err_t read_accel(float* ax, float* ay, float* az);
+    uint8_t read_register (icm20948_bank_t bank, uint8_t reg,
+                            size_t len = 1);
+                              
+    void read_accel(float* buf);
     esp_err_t read_gyro (float* gx, float* gy, float* gz);
-    esp_err_t read_temp (float* temp_c);     
+    esp_err_t read_temp (float* temp_c); 
+    
+    esp_err_t reset();
+    esp_err_t sleep(bool enable);
+    esp_err_t begin();
+    esp_err_t set_accel_range(accel_range_t range);
+    esp_err_t set_gyro_range(gyro_range_t range);
+    esp_err_t calibrate_gyro(uint16_t samples);
+    esp_err_t enable_data_ready_interrupt(bool enable);
+    bool data_ready();
+    esp_err_t read_all(icm20948_data_t* out);
+    bool is_connected();
 };
 
 #endif /* MAIN_ICM20948_H_ */
