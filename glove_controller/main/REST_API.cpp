@@ -82,6 +82,7 @@ esp_err_t REST_API::finger_data_get_uri_handler(httpd_req_t *req)
 // ── GET /api/v1/config ───────────────────────────────────────────
 esp_err_t REST_API::config_uri_data_get(httpd_req_t *req)
 {
+	httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 	REST_API *self = static_cast<REST_API *>(req->user_ctx);
     GloveConfig *cfg = self->_cfg;  // access config via the instance
 	
@@ -102,6 +103,7 @@ esp_err_t REST_API::config_uri_data_get(httpd_req_t *req)
 // ── POST /api/v1/config ──────────────────────────────────────────
 esp_err_t REST_API::config_uri_data_post(httpd_req_t *req)
 {
+	httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 	REST_API *self = static_cast<REST_API *>(req->user_ctx);
     GloveConfig *cfg = self->_cfg;
 	
@@ -142,12 +144,7 @@ void REST_API::start()  // BUG WAS: static void start(void* arg) — wrong signa
 		ESP_LOGE(TAG, "Failed to start server");
         return;
     }
-	
-    // BUG WAS: all three httpd_register_uri_handler calls used &finger_uri
-    // BUG WAS: config_uri declared twice (duplicate variable name)
-    // BUG WAS: POST handler used HTTP_GET method
-    // BUG WAS: user_ctx = self but handlers cast to GloveConfig* — now consistent
-	
+		
     httpd_uri_t root_uri = {
 		.uri      = "/",
         .method   = HTTP_GET,

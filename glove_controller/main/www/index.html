@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glove Controller</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #0f1117;
+            --surface:   #1a1d27;
+            --surface2:  #22263a;
+            --border:    #2e3244;
+            --accent:    #378ADD;
+            --success:   #1D9E75;
+            --warning:   #BA7517;
+            --danger:    #A32D2D;
+            --text:      #e2e8f0;
+            --text-dim:  #64748b;
+            --text-hint: #3d4460;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg:       #f4f4f6;
+                --surface:  #ffffff;
+                --surface2: #f0f0f4;
+                --border:   #dddde8;
+                --text:     #1a1d27;
+                --text-dim: #6b7280;
+                --text-hint:#9ca3af;
+            }
+        }
+
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; height: 52px;
+            background: var(--surface); border-bottom: 0.5px solid var(--border);
+        }
+        .nav-brand { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+        .nav-right  { display: flex; align-items: center; gap: 12px; }
+
+        main {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 700px) { main { grid-template-columns: 1fr; padding: 16px; } }
+
+        .card {
+            background: var(--surface);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+        }
+        .card-full { grid-column: 1 / -1; }
+
+        .card-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; padding-bottom: 12px;
+            border-bottom: 0.5px solid var(--border);
+        }
+        .card-title {
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim);
+        }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 500; padding: 3px 9px;
+            border-radius: 999px; border: 0.5px solid var(--border);
+            color: var(--text-dim); background: var(--surface2);
+        }
+        .badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+        .badge.connected    { color:#0F6E56; border-color:#1D9E75; background:#E1F5EE; }
+        .badge.disconnected { color:#A32D2D; border-color:#E24B4A; background:#FCEBEB; }
+
+        .field { margin-bottom: 12px; }
+        .field:last-child { margin-bottom: 0; }
+        label { display:block; font-size:11px; font-weight:500; color:var(--text-dim); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.05em; }
+
+        input[type="text"], input[type="number"] {
+            width:100%; padding:8px 11px;
+            background:var(--surface2); border:0.5px solid var(--border);
+            border-radius:var(--radius-sm); color:var(--text); font-size:13px;
+            outline:none; transition:border-color 0.15s; font-family:inherit;
+        }
+        input:focus { border-color: var(--accent); }
+
+        .btn-row { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+        button {
+            padding:8px 16px; border-radius:var(--radius-sm);
+            font-size:13px; font-weight:500; cursor:pointer;
+            transition:opacity 0.15s, transform 0.1s; font-family:inherit;
+            border:0.5px solid var(--border); background:var(--surface2); color:var(--text);
+        }
+        button:hover  { opacity:0.8; }
+        button:active { transform:scale(0.97); }
+        button.primary { background:var(--accent);  border-color:var(--accent);  color:#fff; }
+        button.success { background:var(--success); border-color:var(--success); color:#fff; }
+        button.danger  { background:var(--danger);  border-color:var(--danger);  color:#fff; }
+        button.warning { background:var(--warning); border-color:var(--warning); color:#fff; }
+
+        .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+        .metric { background:var(--surface2); border-radius:var(--radius-md); padding:12px 14px; border:0.5px solid var(--border); }
+        .metric-label { font-size:11px; color:var(--text-dim); margin-bottom:4px; }
+        .metric-value { font-size:22px; font-weight:500; line-height:1.2; }
+        .metric-unit  { font-size:12px; color:var(--text-dim); margin-top:2px; }
+
+        .status-bar { font-size:12px; padding:8px 12px; border-radius:var(--radius-sm); margin-top:12px; display:none; border:0.5px solid transparent; }
+        .status-bar.ok    { display:block; background:#E1F5EE; border-color:#1D9E75; color:#085041; }
+        .status-bar.error { display:block; background:#FCEBEB; border-color:#E24B4A; color:#791F1F; }
+
+        .log {
+            background:var(--surface2); border:0.5px solid var(--border);
+            border-radius:var(--radius-sm); padding:10px 12px;
+            font-family:'Cascadia Code','Fira Code',monospace; font-size:12px;
+            color:var(--text-dim); height:100px; overflow-y:auto; line-height:1.8;
+        }
+        .log-line       { display:block; }
+        .log-line.ok    { color:#1D9E75; }
+        .log-line.err   { color:#E24B4A; }
+        .log-line.info  { color:var(--accent); }
+
+        /* ── Quaternion table ───────────────────── */
+        .quat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 900px) { .quat-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 500px) { .quat-grid { grid-template-columns: 1fr; } }
+
+        .quat-joint {
+            background: var(--surface2);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            min-width: 0;
+        }
+
+        .quat-joint-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .quat-joint-name {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-dim);
+        }
+
+        .quat-joint-idx {
+            font-size: 10px;
+            color: var(--text-hint);
+            font-family: 'Cascadia Code', monospace;
+        }
+
+        .quat-row {
+            display: grid;
+            grid-template-columns: 14px 1fr;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .quat-row:last-child { margin-bottom: 0; }
+
+        .quat-axis {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-hint);
+            font-family: 'Cascadia Code', monospace;
+            text-align: center;
+        }
+        .quat-axis.w { color: #534AB7; }
+        .quat-axis.x { color: #A32D2D; }
+        .quat-axis.y { color: #0F6E56; }
+        .quat-axis.z { color: #185FA5; }
+
+        .quat-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quat-bar-track {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .quat-bar-fill {
+            position: absolute;
+            top: 0; height: 100%;
+            border-radius: 2px;
+            transition: left 0.08s, width 0.08s;
+        }
+        .quat-bar-fill.w { background: #534AB7; }
+        .quat-bar-fill.x { background: #A32D2D; }
+        .quat-bar-fill.y { background: #0F6E56; }
+        .quat-bar-fill.z { background: #185FA5; }
+
+        .quat-val {
+            font-size: 11px;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            color: var(--text);
+            min-width: 46px;
+            text-align: right;
+        }
+
+        .ts-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-bottom: 14px;
+            font-family: 'Cascadia Code', monospace;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <span class="nav-brand">Glove Controller</span>
+    <div class="nav-right">
+        <span id="conn-badge" class="badge disconnected">Disconnected</span>
+    </div>
+</nav>
+
+<main>
+
+    <!-- Metrics -->
+    <div class="card card-full">
+        <div class="card-header">
+            <span class="card-title">Live telemetry</span>
+            <span id="last-update" style="font-size:11px;color:var(--text-hint)">—</span>
+        </div>
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Rate</div>
+                <div class="metric-value" id="m-rate">—</div>
+                <div class="metric-unit">Hz</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Latency</div>
+                <div class="metric-value" id="m-latency">—</div>
+                <div class="metric-unit">ms</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Packets</div>
+                <div class="metric-value" id="m-packets">0</div>
+                <div class="metric-unit">total</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quaternion data panel -->
+    <div class="card card-full">
+        <div class="card-header">
+            <span class="card-title">Joint quaternions</span>
+            <span id="quat-ts" style="font-size:11px;color:var(--text-hint);font-family:monospace;">ts: —</span>
+        </div>
+        <div class="quat-grid" id="quat-grid"></div>
+    </div>
+
+    <!-- Network config -->
+    <div class="card">
+        <div class="card-header"><span class="card-title">Network</span></div>
+        <div class="field">
+            <label>ESP32 IP</label>
+            <input type="text" id="esp-ip" value="192.168.1.45">
+        </div>
+        <div class="field">
+            <label>UDP target IP</label>
+            <input type="text" id="udp-ip" value="192.168.1.100">
+        </div>
+        <div class="field">
+            <label>UDP port</label>
+            <input type="number" id="udp-port" value="5005">
+        </div>
+        <div class="btn-row">
+            <button class="primary" onclick="connect()">Connect</button>
+            <button onclick="disconnect()">Disconnect</button>
+        </div>
+        <div class="status-bar" id="net-status"></div>
+    </div>
+
+    <!-- Telemetry config -->
+    <div class="card">
+        <div class="card-header"><span class="card-title">Telemetry config</span></div>
+        <div class="field">
+            <label>Rate (Hz)</label>
+            <input type="number" id="rate-hz" value="100" min="1" max="200">
+        </div>
+        <div class="field">
+            <label>Filter alpha</label>
+            <input type="number" id="filter-alpha" value="0.9" step="0.01" min="0" max="1">
+        </div>
+        <div class="btn-row">
+            <button class="primary" onclick="saveConfig()">Save</button>
+            <button onclick="loadConfig()">Reload</button>
+            <button class="warning" onclick="calibrate()">Calibrate</button>
+        </div>
+        <div class="status-bar" id="cfg-status"></div>
+    </div>
+
+    <!-- Log -->
+    <div class="card card-full">
+        <div class="card-header">
+            <span class="card-title">Log</span>
+            <button onclick="clearLog()" style="padding:3px 10px;font-size:11px;">Clear</button>
+        </div>
+        <div class="log" id="log"></div>
+    </div>
+
+</main>
+
+<script>
+// ── Joint definitions — 16 joints total ──────────────────────────
+// Layout mirrors a real hand:
+//   Thumb  : CMC, MCP, IP
+//   Index  : MCP, PIP, DIP
+//   Middle : MCP, PIP, DIP
+//   Ring   : MCP, PIP, DIP
+//   Pinky  : MCP, PIP, DIP
+//   Wrist  : 1 joint
+const JOINTS = [
+    { id: 0,  finger: 'Thumb',  joint: 'CMC' },
+    { id: 1,  finger: 'Thumb',  joint: 'MCP' },
+    { id: 2,  finger: 'Thumb',  joint: 'IP'  },
+    { id: 3,  finger: 'Index',  joint: 'MCP' },
+    { id: 4,  finger: 'Index',  joint: 'PIP' },
+    { id: 5,  finger: 'Index',  joint: 'DIP' },
+    { id: 6,  finger: 'Middle', joint: 'MCP' },
+    { id: 7,  finger: 'Middle', joint: 'PIP' },
+    { id: 8,  finger: 'Middle', joint: 'DIP' },
+    { id: 9,  finger: 'Ring',   joint: 'MCP' },
+    { id: 10, finger: 'Ring',   joint: 'PIP' },
+    { id: 11, finger: 'Ring',   joint: 'DIP' },
+    { id: 12, finger: 'Pinky',  joint: 'MCP' },
+    { id: 13, finger: 'Pinky',  joint: 'PIP' },
+    { id: 14, finger: 'Pinky',  joint: 'DIP' },
+    { id: 15, finger: 'Wrist',  joint: 'ROT' },
+];
+
+// ── Build the quaternion grid once ───────────────────────────────
+function buildQuatGrid() {
+    const grid = document.getElementById('quat-grid');
+    grid.innerHTML = '';
+    for (const j of JOINTS) {
+        const div = document.createElement('div');
+        div.className = 'quat-joint';
+        div.innerHTML = `
+            <div class="quat-joint-header">
+                <span class="quat-joint-name">${j.finger}</span>
+                <span class="quat-joint-idx">[${j.id}] ${j.joint}</span>
+            </div>
+            ${['w','x','y','z'].map(axis => `
+            <div class="quat-row">
+                <span class="quat-axis ${axis}">${axis}</span>
+                <div class="quat-bar-wrap">
+                    <div class="quat-bar-track">
+                        <div class="quat-bar-fill ${axis}" id="bar-${j.id}-${axis}"></div>
+                    </div>
+                    <span class="quat-val" id="val-${j.id}-${axis}">0.000</span>
+                </div>
+            </div>`).join('')}
+        `;
+        grid.appendChild(div);
+    }
+}
+
+// ── Update one joint's display ───────────────────────────────────
+// value range: -1.0 to 1.0
+// bar: center at 50%, width proportional to |value|
+function updateJoint(id, w, x, y, z) {
+    for (const [axis, val] of [['w',w],['x',x],['y',y],['z',z]]) {
+        const valEl = document.getElementById(`val-${id}-${axis}`);
+        const barEl = document.getElementById(`bar-${id}-${axis}`);
+        if (!valEl || !barEl) continue;
+        valEl.textContent = val.toFixed(3);
+        const pct    = Math.abs(val) * 50;       // 0–50%
+        const left   = val >= 0 ? 50 : 50 - pct; // start from center
+        barEl.style.left  = left + '%';
+        barEl.style.width = pct + '%';
+    }
+}
+
+// ── Apply full data_packet_t ─────────────────────────────────────
+/*
+    Expected JSON structure from ESP32:
+    {
+        "timestamp": 1234567890123,   // uint64 ms
+        "quaternions": [              // 16 entries, one per joint
+            { "w": 1.0, "x": 0.0, "y": 0.0, "z": 0.0 },
+            ...
+        ]
+    }
+
+    Joint order must match JOINTS array above (indices 0–15).
+*/
+function onData(data) {
+    // timestamp
+    document.getElementById('quat-ts').textContent =
+        'ts: ' + (data.timestamp || data.timestamp_ms || '—');
+
+    // quaternions
+    const quats = data.quaternions;
+    if (!Array.isArray(quats)) return;
+    for (let i = 0; i < Math.min(quats.length, 16); i++) {
+        const q = quats[i];
+        if (!q) continue;
+        updateJoint(i,
+            typeof q.w === 'number' ? q.w : 1,
+            typeof q.x === 'number' ? q.x : 0,
+            typeof q.y === 'number' ? q.y : 0,
+            typeof q.z === 'number' ? q.z : 0,
+        );
+    }
+}
+
+// ── API ──────────────────────────────────────────────────────────
+const API  = () => `http://${document.getElementById('esp-ip').value.trim()}`;
+let pollTimer   = null;
+let packetCount = 0;
+
+function log(msg, type = '') {
+    const el   = document.getElementById('log');
+    const line = document.createElement('span');
+    line.className   = 'log-line ' + type;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+}
+function clearLog() { document.getElementById('log').innerHTML = ''; }
+
+function showStatus(id, msg, ok) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'status-bar ' + (ok ? 'ok' : 'error');
+    setTimeout(() => el.className = 'status-bar', 3000);
+}
+
+function setBadge(connected) {
+    const b = document.getElementById('conn-badge');
+    b.textContent = connected ? 'Connected' : 'Disconnected';
+    b.className   = 'badge ' + (connected ? 'connected' : 'disconnected');
+}
+
+function connect() {
+    disconnect();
+    loadConfig();
+    pollTimer = setInterval(fetchData, 50);
+    log(`Connecting to ${API()}`, 'info');
+}
+
+function disconnect() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    setBadge(false);
+}
+
+async function loadConfig() {
+    try {
+        const r   = await fetch(`${API()}/api/v1/config`);
+        const cfg = await r.json();
+        document.getElementById('rate-hz').value      = cfg.rate_hz;
+        document.getElementById('filter-alpha').value = cfg.filter_alpha;
+        document.getElementById('udp-ip').value       = cfg.udp_ip;
+        document.getElementById('udp-port').value     = cfg.udp_port;
+        document.getElementById('m-rate').textContent = cfg.rate_hz;
+        log('Config loaded', 'ok');
+        showStatus('cfg-status', 'Config loaded', true);
+    } catch(e) {
+        log('Failed to load config: ' + e.message, 'err');
+        showStatus('cfg-status', 'Failed: ' + e.message, false);
+    }
+}
+
+async function saveConfig() {
+    const cfg = {
+        rate_hz:      parseInt(document.getElementById('rate-hz').value),
+        filter_alpha: parseFloat(document.getElementById('filter-alpha').value),
+        udp_ip:       document.getElementById('udp-ip').value.trim(),
+        udp_port:     parseInt(document.getElementById('udp-port').value),
+    };
+    try {
+        const r = await fetch(`${API()}/api/v1/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cfg),
+        });
+        const j = await r.json();
+        const ok = j.status === 'ok';
+        log(ok ? 'Config saved' : 'Save failed', ok ? 'ok' : 'err');
+        showStatus('cfg-status', ok ? 'Saved' : 'Failed', ok);
+    } catch(e) {
+        log('Save error: ' + e.message, 'err');
+        showStatus('cfg-status', 'Error: ' + e.message, false);
+    }
+}
+
+async function calibrate() {
+    try {
+        await fetch(`${API()}/api/v1/calibrate`, { method: 'POST' });
+        log('Calibration triggered', 'ok');
+        showStatus('cfg-status', 'Calibration triggered', true);
+    } catch(e) {
+        log('Calibration failed: ' + e.message, 'err');
+    }
+}
+
+async function fetchData() {
+    const t0 = Date.now();
+    try {
+        const r    = await fetch(`${API()}/api/v1/finger/all`,
+                                 { signal: AbortSignal.timeout(1000) });
+        const data = await r.json();
+        const lat  = Date.now() - t0;
+        packetCount++;
+        setBadge(true);
+        document.getElementById('m-latency').textContent = lat;
+        document.getElementById('m-packets').textContent = packetCount;
+        document.getElementById('last-update').textContent =
+            new Date().toLocaleTimeString();
+        onData(data);
+    } catch(e) {
+        setBadge(false);
+    }
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+buildQuatGrid();
+
+// Demo data — remove when connecting to real ESP32
+onData({
+    timestamp: Date.now(),
+    quaternions: Array.from({ length: 16 }, (_, i) => ({
+        w:  1.0,
+        x:  0.0,
+        y:  0.0,
+        z:  0.0,
+    }))
+});
+</script>
+</body>
+</html>
