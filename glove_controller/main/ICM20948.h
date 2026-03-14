@@ -44,9 +44,9 @@ typedef enum {
 struct icm20948_data_t {
     float ax, ay, az;
     float gx, gy, gz;
+    float mx, my, mz;
     float temp_c;
 };
-
 
 class ICM20948 {
 private:
@@ -115,6 +115,9 @@ public:
     bool data_ready();
     esp_err_t read_all(icm20948_data_t* out);
     bool is_connected();
+    esp_err_t enable_mag();
+    esp_err_t read_mag(float* mx, float* my, float* mz);
+
 };
 
 #endif /* MAIN_ICM20948_H_ */

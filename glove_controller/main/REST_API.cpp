@@ -6,6 +6,10 @@
  */
 
 #include "REST_API.h"
+#include "esp_http_server.h"
+#include "cJSON.h"
+#include "esp_log.h"
+
 
 REST_API::REST_API() {
 	// TODO Auto-generated constructor stub

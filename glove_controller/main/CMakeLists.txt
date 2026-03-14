@@ -9,6 +9,11 @@ idf_component_register(
         "JointAngle.cpp"
         "Quaternion.cpp"
         "REST_API.cpp"
+        "fingerIK.cpp"
+        "REST_API.cpp"
+        "ICM20948.cpp"
+        "communication.cpp"
+        "wifi.cpp"
     INCLUDE_DIRS
         "."
     REQUIRES
@@ -18,4 +23,7 @@ idf_component_register(
         esp_wifi
         esp_netif
         nvs_flash
+        lwip
+        freertos
+        json
 )
