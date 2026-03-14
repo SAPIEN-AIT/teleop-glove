@@ -36,7 +36,7 @@ public:
     explicit Telemetry(GloveConfig &config);
     void start();
     void updatePacket(const data_packet_t &pkt);
-    void task(void* arg);
+    static void task(void* arg);
     void run();
 };
 

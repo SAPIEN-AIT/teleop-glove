@@ -26,4 +26,6 @@ idf_component_register(
         lwip
         freertos
         json
+    EMBED_FILES 
+        "www/index.html"
 )

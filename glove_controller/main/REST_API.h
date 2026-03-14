@@ -1,40 +1,35 @@
 /*
- * MQTT.h
+ * REST_API.h
  *
  *  Created on: 4 mar 2026
- *      Author: edoardo
+ *      Author: Karol Wickel
  */
 
 #ifndef MAIN_REST_API_H_
 #define MAIN_REST_API_H_
 
-#include "esp_http_server.h"
-#include <string.h>
-#include <sys/param.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include "esp_log.h"
-#include "nvs_flash.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
-
-
-#define MAX_HTTP_RECV_BUFFER 512
-#define MAX_HTTP_OUTPUT_BUFFER 2048
-static const char *TAG = "HTTP_CLIENT";
+#include "esp_http_server.h" 
+#include "config.h"
+#include "communication.h"
 
 class REST_API {
 private:
-	
+    httpd_handle_t  _server  = nullptr;
+    httpd_config_t  _config;
+    GloveConfig    *_cfg     = nullptr; 
+	data_packet_t *sensor_data = nullptr;
+
+    static esp_err_t root_handler              (httpd_req_t *req);
+    static esp_err_t finger_data_get_uri_handler(httpd_req_t *req);
+    static esp_err_t config_uri_data_get       (httpd_req_t *req);
+    static esp_err_t config_uri_data_post      (httpd_req_t *req);
+
 public:
-	REST_API();
-	virtual ~REST_API();
-	
-	
+    explicit REST_API(GloveConfig &config, data_packet_t &data);  // ← takes config by reference
+    ~REST_API();
+    void start();
+    void stop();
 };
+
 
 #endif /* MAIN_REST_API_H_ */
