@@ -3,7 +3,7 @@
 
 idf_component_register(
     SRCS
-        "main.c"
+        "main.cpp"
        
         "ICM20948.cpp"
         "JointAngle.cpp"
@@ -26,6 +26,9 @@ idf_component_register(
         lwip
         freertos
         json
+        mdns
+        esp_timer
+
     EMBED_FILES 
         "www/index.html"
 )

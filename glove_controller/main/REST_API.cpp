@@ -11,6 +11,7 @@
 #include "cJSON.h"
 #include "config.h"
 #include <algorithm>
+#include "lwip/netdb.h"
 
 static const char *TAG = "REST_API";
 
@@ -177,6 +178,7 @@ void REST_API::start()  // BUG WAS: static void start(void* arg) — wrong signa
     };
     httpd_register_uri_handler(_server, &config_post_uri);
 	
+
     ESP_LOGI(TAG, "REST API started on port %d", _config.server_port);
 }
 
